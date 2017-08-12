@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="coor">
+        <attr name="padding_surround" format="dimension" />
+        <attr name="axial_scale" format="float"/>
+        <attr name="axial_finger" format="dimension"/>
+    </declare-styleable>
+</resources>

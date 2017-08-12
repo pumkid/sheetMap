@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:pumkid="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="pumkid.com.psheet.MainActivity">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="150dip"
+        android:text="Draw a coordinate!"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <pumkid.com.psheet.Diagram.SheetMap
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/sm_test"
+        >
+
+    <pumkid.com.psheet.Diagram.gcoordinate.PlanarCoordinateView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        pumkid:axial_scale="0.85"
+        pumkid:axial_finger="2dip"
+        pumkid:padding_surround="8dip"
+        />
+    </pumkid.com.psheet.Diagram.SheetMap>
+
+</RelativeLayout>

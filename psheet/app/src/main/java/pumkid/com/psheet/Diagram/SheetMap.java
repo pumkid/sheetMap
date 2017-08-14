@@ -11,6 +11,7 @@ import java.util.List;
 import pumkid.com.psheet.Diagram.gcoordinate.ICoordinateView;
 import pumkid.com.psheet.Diagram.gcoordinate.ICurveView;
 import pumkid.com.psheet.common.CommonUtil;
+import pumkid.com.psheet.common.Point2D;
 
 /**
  * Created by luna on 17/8/8.
@@ -19,6 +20,7 @@ import pumkid.com.psheet.common.CommonUtil;
 public class SheetMap extends ViewGroup{
     private ICoordinateView coordinateView = null;
     private List<ICurveView> curveViews;
+    private Context mContext;
 
     private int paddingLeft;
     private int paddingRight;
@@ -43,14 +45,22 @@ public class SheetMap extends ViewGroup{
 
     public SheetMap(Context context) {
         super(context);
+        init(context);
     }
 
     public SheetMap(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init(context);
     }
 
     public SheetMap(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        init(context);
+    }
+
+    private void init(Context context)
+    {
+        this.mContext = context;
     }
 
 
@@ -110,6 +120,18 @@ public class SheetMap extends ViewGroup{
             curveViews = new LinkedList<>();
 
         curveViews.add(view);
+    }
+
+    public void attachCurve(LinkedList<Point2D> point2Ds, int color)
+    {
+        ICurveView curveView = new ICurveView(mContext);
+        curveView.setList(point2Ds);
+        curveView.setColor(color);
+
+        if(coordinateView != null)
+            curveView.bind(coordinateView);
+        this.addView(curveView);
+        addCurve(curveView);
     }
 
 }

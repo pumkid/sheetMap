@@ -1,6 +1,7 @@
 package pumkid.com.psheet.Diagram.gcoordinate;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
@@ -20,11 +21,16 @@ public class ICoordinateView extends View {
     protected boolean yn = false;
     protected boolean xp = false;
     protected boolean xn = false;
-
+    protected float axial_scale = 0;
     protected int[] axialY;
     protected int[] axialX;
     protected int maxY = 0, minY = 0;
     protected int maxX = 0, minX = 0;
+
+    protected int llX = 0;
+    protected int llY = 0;
+    protected int ulX = 0;
+    protected int ulY = 0;
 
     public ICoordinateView(Context context) {
         super(context);
@@ -42,6 +48,7 @@ public class ICoordinateView extends View {
     protected void init(Context context)
     {
         mContext = context;
+
     }
 
     protected void init(Context context , AttributeSet attrs)
@@ -59,6 +66,20 @@ public class ICoordinateView extends View {
         axialX = axialx;
         axialY = axialy;
         computeZeroValue();
+    }
+
+    public int[] getRangeValue()
+    {
+        return new int[]{maxX,maxY,minX,minY};
+    }
+
+    public int[] getRangePosition()
+    {
+        return new int[]{ulX,ulY,llX,llY};
+    }
+    public float getAxial_scale()
+    {
+        return axial_scale;
     }
 
     private void computeZeroValue()

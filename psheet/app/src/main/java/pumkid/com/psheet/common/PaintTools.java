@@ -35,12 +35,14 @@ public class PaintTools {
             case PAINT_TEXT:
                 return gaintPaintText(size);
             case PAINT_DASH:
-                return gaintPaintDash();
+                return gaintPaintDash((int)size);
             default:
                 return gaintPaintCOR(size);
         }
 
     }
+
+
 
     private Paint gaintPaintText(float sheet_text_size)
     {
@@ -68,14 +70,14 @@ public class PaintTools {
         return  p;
     }
 
-    private Paint gaintPaintDash()
+    private Paint gaintPaintDash(int size)
     {
         Paint paint = paints[PAINT_DASH];
         if(paint == null)
             paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setStyle(Paint.Style.STROKE);
         paint.setColor(Color.GRAY);
-        paint.setStrokeWidth(1);
+        paint.setStrokeWidth(size);
         PathEffect effects = new DashPathEffect(new float[] { 20,20}, 1);
         paint.setPathEffect(effects);
         return paint;

@@ -3,15 +3,20 @@ package pumkid.com.psheet.Diagram.gcoordinate;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
+
+import java.util.ArrayList;
 
 import pumkid.com.psheet.Diagram.arrows.ArrowsDrawer;
 import pumkid.com.psheet.Diagram.arrows.ArrowsUtil;
 import pumkid.com.psheet.R;
 import pumkid.com.psheet.common.CommonUtil;
+import pumkid.com.psheet.common.DashLine;
 import pumkid.com.psheet.common.Debug;
 import pumkid.com.psheet.common.PaintTools;
 import pumkid.com.psheet.common.Point2D;
@@ -31,13 +36,10 @@ public class PlanarCoordinateView extends ICoordinateView {
     private int scales = 10;
     private int mWidth = 0;
     private int mHeight = 0;
-    private int llX = 0;
-    private int llY = 0;
-    private int ulX = 0;
-    private int ulY = 0;
+
 
     float scaleP[] = {0,0,0,0};
-    float axial_scale = 0;
+
     private PaintTools paintTools;
     int[] mValues ;
     private float padding_surround = 0;
@@ -46,6 +48,8 @@ public class PlanarCoordinateView extends ICoordinateView {
     private float scaleX = 0;
 
     private boolean drawDashGird = true;
+    private float eclosion = 15;
+    private ArrayList<DashLine> dashLineArrayList;
 
 
     public PlanarCoordinateView(Context context) {
@@ -166,7 +170,11 @@ public class PlanarCoordinateView extends ICoordinateView {
             //draw  x finger
             canvas.drawLine(plScale[START_X], plScale[START_Y], plScale[END_X],plScale[END_Y],paintTools.gaintPaint(PaintTools.PAINT_SCALE,2));
             if(drawDashGird)
-                drawDashLine(canvas,llX ,plScale[START_Y],ulX ,plScale[END_Y]);
+            {
+                DashLine dsline = getDashLine(llX ,plScale[START_Y],ulX ,plScale[END_Y]);
+                drawDashLine(canvas,dsline);
+            }
+
             int text_width = (int) pText.measureText(""+axialY[i]);
 
         //    if(i != 0)
@@ -187,7 +195,10 @@ public class PlanarCoordinateView extends ICoordinateView {
 
             int text_width = (int) pText.measureText(""+axialX[i]);
             if(drawDashGird)
-                drawDashLine(canvas,plScale[START_X],llY,plScale[END_X], ulY);
+            {
+                DashLine dsline = getDashLine(plScale[START_X],llY,plScale[END_X], ulY);
+                drawDashLine(canvas,dsline);
+            }
             float startx = plScale[START_X] - text_width/2;
             //the zero stay a little right from axial y
             if(axialX[i] == 0)
@@ -199,19 +210,49 @@ public class PlanarCoordinateView extends ICoordinateView {
 
     }
 
+    private DashLine getDashLine(float startx, float starty, float endx , float endy)
+    {
+        DashLine dsline = null;
+        for(int i = 0; dashLineArrayList != null && i < dashLineArrayList.size() ; i++)
+        {
+            DashLine target = dashLineArrayList.get(i);
+            if(startx==(target.startPoint.x)
+                &&starty==(target.startPoint.y)
+                &&endx==(target.endPoint.x)
+                &&endy==(target.endPoint.y))
+            {
+                dsline = target;
+                break;
+            }
+        }
+        if(dsline == null)
+        {
+            dsline = new DashLine(new Point2D(startx,starty),new Point2D(endx,endy));
+            if(dashLineArrayList == null)
+                dashLineArrayList = new ArrayList<>();
+            dashLineArrayList.add(dsline);
+        }
+        return dsline;
+    }
+
     private void drawDashLine(Canvas canvas)
     {
 
     }
 
-    public void drawDashLine(Canvas canvas,float startx ,float starty, float endx ,float endy){
+    public void drawDashLine(Canvas canvas,DashLine dsline){
         float totalWidth = 0;
         canvas.save();
         Path p = new Path();
-        p.moveTo(startx,starty);
-        p.lineTo(endx,endy);
-        canvas.drawPath(p, paintTools.gaintPaint(PaintTools.PAINT_DASH,2));
+        p.moveTo(dsline.startPoint.x,dsline.startPoint.y);
+        p.lineTo(dsline.endPoint.x,dsline.endPoint.y);
+
+        Paint paint = paintTools.gaintPaint(PaintTools.PAINT_DASH,dsline.width);
+        paint.setColor(dsline.color);
+
+        canvas.drawPath(p, paint);
         canvas.restore();
+
     }
 
 
@@ -290,5 +331,51 @@ public class PlanarCoordinateView extends ICoordinateView {
     {
 
     }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction())
+        {
+            case MotionEvent.ACTION_UP:
+            {
+                float actionX = event.getX();
+                float actionY = event.getY();
+                Debug.d("event x:"+actionX+" y:"+actionY);
+                checkDashLine(actionX - eclosion,actionX + eclosion
+                ,actionY - eclosion, actionY + eclosion);
+                this.invalidate();
+
+            }
+            break;
+        }
+
+        return super.onTouchEvent(event);
+    }
+
+    public void checkDashLine(float startx,  float endx , float starty, float endy )
+    {
+        for(DashLine line : dashLineArrayList)
+        {
+            line.color = DashLine.DEFAULT_COLOR;
+            line.width = DashLine.DEFAULT_WIDTH;
+            boolean dl_horizontal = (line.startPoint.y == line.endPoint.y);
+            if(dl_horizontal)
+            {
+                float targetY = line.startPoint.y;
+                if(targetY < endy && targetY >starty ) {
+                    line.color = Color.BLUE;
+                    line.width = 3;
+                }
+            }else
+            {
+                float targetX = line.startPoint.x;
+                if(targetX < endx && targetX >startx ) {
+                    line.color = Color.BLUE;
+                    line.width = 3;
+                }
+            }
+        }
+    }
+
 
 }

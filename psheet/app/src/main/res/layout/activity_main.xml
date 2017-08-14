@@ -29,6 +29,7 @@
         pumkid:axial_scale="0.85"
         pumkid:axial_finger="2dip"
         pumkid:padding_surround="8dip"
+        android:clickable="true"
         />
     </pumkid.com.psheet.Diagram.SheetMap>
 
